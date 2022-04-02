@@ -1,0 +1,726 @@
+<View style={{justifyContent: 'center'}}>
+            <Image source={require("./picture/logoAptech.png")} style={{width:'100%',height: '50%'}}></Image>
+            UserName <TextInput style={{height:100,width: '100%',borderColor:'red'}}></TextInput>  <br/>
+            Password <TextInput style={{height:100,width: '100%',borderColor:'red'}}></TextInput> 
+            <Button title="Login" onPress={ ()=> navigation.navigate('Home',{name:'Pham Huu Thang',Age: 22}) } />
+        </View>
+
+
+<Image source={require("./picture/logoAptech.png")} style={{width:'100%',height: '50%'}}></Image>
+
+
+
+<form>
+              <input type="text" placeholder='Type your Username...'
+                  style={{textAlign:'center',fontSize:32,height:60,width: '60%',borderWidth:5,borderColor:'black',borderBottomLeftRadius: 30,
+                  borderBottomRightRadius: 30,borderTopEndRadius:30,borderTopLeftRadius:30}}
+              />
+              <input type="password" placeholder='Type your Password...'
+                  style={{textAlign:'center',fontSize:32,height:60,width: '60%',borderWidth:5,borderColor:'black',borderBottomLeftRadius: 30,
+                  borderBottomRightRadius: 30,borderTopEndRadius:30,borderTopLeftRadius:30}}
+              />
+            </form>
+
+
+
+//---- fetch first-----------------------------------------------------------------------------------------
+import React,{Component} from 'react';
+import { View, Text , StyleSheet , Button, Image, TextInput, FlatList ,form} from 'react-native';
+
+
+//fetch data API
+class FetchAPILogin extends Component{
+    //lay du lieu
+    constructor(props){
+      super(props);
+      this.state={
+        data:[],
+      }
+      let te=fetch("http://localhost/systemAptech/API_DiemDanh/login.php",{
+        method: 'POST',
+        headers: {
+          // 'Content-Type': 'application/json',
+          // 'Accept': 'application/json'
+        },
+        body: {
+          txtID: "ltdao@ctu.edu.vn",
+          txtPass: "ltdao"
+          }
+      })
+      .then((response) => response.json())
+      .then((json) => {this.setState({data:json.recordset})})
+      .catch((error)=> console.log(error.json));
+      console.warn(te);
+    }
+    
+    //hien thi
+    render(){
+      const {data}= this.state;
+      return (
+        <View style={{justifyContent: 'center',alignItems:'center',backgroundColor:'white',padding:10}}>
+        
+            <FlatList
+                data={data}
+                renderItem={({item}) =>  <Text>sdsd{item}</Text>} 
+            />
+            <Image source={require("./picture/logoAptech.png")} style={{width:'100%',height: 250}}></Image>
+            
+            <TextInput placeholder='Type your Username...'  style={{textAlign:'center',fontSize:32,height:60,width: '60%',borderWidth:5,borderColor:'black',borderBottomLeftRadius: 30,
+                        borderBottomRightRadius: 30,borderTopEndRadius:30,borderTopLeftRadius:30}}>
+            </TextInput> 
+            <TextInput secureTextEntry={true} placeholder='Type your Password...' style={{textAlign:'center',fontSize:32,height:60,width: '60%',borderWidth:5,borderColor:'black',borderBottomLeftRadius: 30,
+                        borderBottomRightRadius: 30,borderTopEndRadius:30,borderTopLeftRadius:30}}>
+            </TextInput> 
+        </View>
+      );
+    }
+  }
+
+const Login= ({navigation}) =>{
+    return(
+        <div>
+            <FetchAPILogin/>
+            <Button title="Login" style={{backgroundColor:'black'}}
+              onPress={ ()=> navigation.navigate('Home',{name:'Pham Huu Thang',Age: 22})} 
+            />
+            
+        </div>
+    );
+}
+export default Login;
+
+//-------------------------------First Home ---------------------------------------------------
+import React, {Component} from 'react';
+import { View, Text , StyleSheet, Button, ScrollView,FlatList,Image} from 'react-native';
+
+class  Datahome extends Component{
+    //lay du lieu
+    constructor(props){
+      super(props);
+      this.state={
+        data:[],
+      }
+      fetch("http://localhost/systemAptech/API_DiemDanh/ClassOfTeacher.php",{
+        method: 'GET',
+        headers: { 
+          // 'Content-Type': 'application/json'
+        },
+        body: {txtIDACCOUNT: 'ltdao'}
+      })
+      .then((response) => response.json())
+      .then((json) => {this.setState({data:json.recordset})})
+      .catch((error)=> console.log(error));
+    }
+    //hien thi
+    render(){
+      const {data}= this.state;
+      return (
+        <View style={{ flex: 1,backgroundColor: '#fff',alignItems: 'center',justifyContent: 'center'}}>
+          <Text style={{fontSize:45, color:'green'}}>Your Class List </Text>
+          <FlatList
+            data={data}
+            
+            renderItem={ ({item}) => 
+              <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                <Image source={require('./picture/iconclass.jpg')} style={{flex:1,width:70,height:70}}></Image>
+                <Button title={item.LOP_ID} style={{flex: 4,backgroundColor:'green'}}> </Button>
+              </View>
+            } 
+          />
+          
+        </View>
+      );
+    }
+  }
+
+const Home= ({navigation, route}) =>{
+    return(
+        <View>
+            <Datahome/>
+            <Button title="Change Screen" onPress={ ()=> navigation.navigate('Login') } />
+        </View>
+    );
+}
+export default Home;
+
+//---------------------------------------------Attendance-----------------------------
+import React, {Component} from 'react';
+import { View, Text , StyleSheet, Button, ScrollView,FlatList,Image} from 'react-native';
+
+class  DataTableAttend extends Component{
+    //lay du lieu
+    
+    constructor(props){
+      super(props);
+      var dataInput = new FormData();
+      dataInput.append('txtID_LOP',ID_LOP);
+      this.state={
+        data:[],
+      }
+      fetch("http://localhost/systemAptech/API_DiemDanh/ShowTableAttend.php",{
+        method: 'POST',
+        headers: { 
+          //'Content-Type': 'application/json'
+        },
+        body: dataInput
+      })
+      .then((response) => response.json())
+      .then((json) => {this.setState({data:json.recordset})})
+      .catch((error)=> console.log(error));
+    }
+
+
+    //hien thi
+    render(){
+      const {data}= this.state;
+      return (
+        <View style={{ flex: 1,backgroundColor: '#fff',alignItems: 'center',justifyContent: 'center'}}>
+          <Text style={{fontSize:45, color:'black'}}>Class List of  Attend</Text>
+          <FlatList
+            data={data}
+            
+            renderItem={ ({item}) => 
+              <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                <Text>{item.SV_TEN}</Text>
+              </View>
+            } 
+          />
+          
+        </View>
+      );
+    }
+  }
+
+const TableAttend= ({navigation, route}) =>{
+    // console.log(route.params.idAccount);
+    console.log(route);
+    window.ID_LOP=route.params.ID_LOP;
+    //console.log(idAccount);
+    return(
+        <View>
+            <DataTableAttend/>
+            <Button title="Change Screen" onPress={ ()=> navigation.navigate('') } />
+        </View>
+    );
+}
+export default TableAttend;
+
+
+//---------------------------------Show table Atend----------------------------------
+import React, {Component} from 'react';
+import { View, Text , StyleSheet, Button, ScrollView,FlatList,Image} from 'react-native';
+
+class  DataTableAttend extends Component{
+    //lay du lieu
+    
+    constructor(props){
+      super(props);
+      var dataInput = new FormData();
+      dataInput.append('txtID_LOP',ID_LOP);
+      this.state={
+        data:[],
+      }
+      fetch("http://192.168.1.8/systemAptech/API_DiemDanh/ShowTableAttend.php",{
+        method: 'POST',
+        headers: { 
+          //'Content-Type': 'application/json'
+        },
+        body: dataInput
+      })
+      .then((response) => response.json())
+      .then((json) => {this.setState({data:json.recordset})})
+      .catch((error)=> console.log(error));
+    }
+
+    //hien thi
+    renderTableData() {
+      return this.state.data.map((student, index) => {
+        const { MH_ID,LOP_ID,SV_MSSV, SV_TEN, T1,T2,L1,T3,L2,T4,L3,T5,L4,T6,L5,T7,
+          L6,T8,L7,T9,L8,T10,L9,T11,L10,Remarks } = student
+        return (
+          <tr key={SV_MSSV}>
+            <td>{MH_ID}</td>
+            <td>{LOP_ID}</td>
+            <td>{SV_MSSV}</td>
+            <td>{SV_TEN}</td>
+            <td>{T1}</td>
+            <td>{T2}</td>
+            <td>{L1}</td>
+            <td>{T3}</td>
+            <td>{L2}</td>
+            <td>{T4}</td>
+            <td>{L3}</td>
+            <td>{T5}</td>
+            <td>{L4}</td>
+            <td>{T6}</td>
+            <td>{L5}</td>
+            <td>{T7}</td>
+            <td>{L6}</td>
+            <td>{T8}</td>
+            <td>{L7}</td>
+            <td>{T9}</td>
+            <td>{L8}</td>
+            <td>{T10}</td>
+            <td>{L9}</td>
+            <td>{T11}</td>
+            <td>{L10}</td>
+            <td>{Remarks}</td>
+          </tr>
+        )
+      })
+    }
+    // renderTableHeader() {
+    //   const header = Object.keys(this.state.data)
+    //   console.log(header);
+    //   return header.map((key, index) => <th key={index}>{key.toUpperCase()}</th>)
+    // }
+  
+    render() {
+      return (
+        <View style={{backgroundColor:'white'}}>
+          <table border="1" >
+            <tbody>
+              {/* <tr>{this.renderTableHeader()}</tr> */}
+              <tr style={{fontWeight:'bold',color:'aqua',backgroundColor:'black'}}>
+                <td><Text>MH_ID</Text></td>
+                <td><Text>LOP_ID</Text></td>
+                <td><Text>MSSV</Text></td>
+                <td><Text>NAME</Text></td>
+                <td><Text>T1</Text></td>
+                <td><Text>T2</Text></td>
+                <td><Text>L1</Text></td>
+                <td><Text>T3</Text></td>
+                <td><Text>L2</Text></td>
+                <td><Text>T4</Text></td>
+                <td><Text>L3</Text></td>
+                <td><Text>T5</Text></td>
+                <td><Text>L4</Text></td>
+                <td><Text>T6</Text></td>
+                <td><Text>L5</Text></td>
+                <td><Text>T7</Text></td>
+                <td><Text>L6</Text></td>
+                <td><Text>T8</Text></td>
+                <td><Text>L7</Text></td> 
+                <td><Text>T9</Text></td>
+                <td><Text>L8</Text></td>
+                <td><Text>T10</Text></td>
+                <td><Text>L9</Text></td>
+                <td><Text>T11</Text></td>
+                <td><Text>L10</Text></td>
+                <td><Text>Remarks</Text></td>
+              </tr>
+              {this.renderTableData()}
+            </tbody>
+          </table>
+        </View>
+      )
+    }
+  }
+
+const TableAttend= ({navigation, route}) =>{
+    // console.log(route.params.idAccount);
+    window.ID_LOP=route.params.ID_LOP;
+    //console.log(idAccount);
+    return(
+        <View>
+            <DataTableAttend/>
+            <Button title="Attendance" onPress={ ()=> navigation.navigate('') } />
+        </View>
+    );
+}
+export default TableAttend;
+
+
+
+
+<TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <View><Text>Lesson T1</Text></View> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson T2</Text> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson L1</Text> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson T3</Text> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson L2</Text> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson T4</Text> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson L3</Text> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson T5</Text> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson L4</Text> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson T6</Text> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson L5</Text> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson T7</Text> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson L6</Text> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson T8</Text> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson L7</Text> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson T9</Text> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson L8</Text> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson T10</Text> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson L9</Text> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson T11</Text> </TouchableOpacity>
+                        <TouchableOpacity style={styles.Button_Lesson} onPress={ ()=>alert("Thang")}> <Text>Lesson L10</Text> </TouchableOpacity>
+
+
+
+
+//-----------------------------------Camera.js--------------------------------------------
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Button } from 'react-native';
+import { Camera } from 'expo-camera';
+import * as FaceDetector from 'expo-face-detector'; 
+
+function CameraPage() {
+    const [hasPermission, setHasPermission] = useState(null);
+    const [type, setType] = useState(Camera.Constants.Type.back);
+    const [changCamera,setChangeCamera]= useState(false);
+    const faces=useState([])
+    useEffect(() => {
+        (async () => {
+        const { status } = await Camera.requestPermissionsAsync();
+        setHasPermission(status === 'granted');
+        })();
+    }, []);
+
+    if (hasPermission === null) {
+        return <View />;
+    }
+    if (hasPermission === false) {
+        return <Text>No access to camera</Text>;
+    }
+
+    const faceDetector =  ({faces}) => {
+        if(faces.length > 0){
+        setChangeCamera(true);
+        }else{
+        setChangeCamera(false);
+        }
+    }
+    const takePicture =async () => {
+        if (this.camera) {
+            const options = { quality: 0.5, base64: true, mirrorImage: true };
+            let photo = await this.camera.takePictureAsync(options);
+            console.log(photo.uri);
+
+            try{
+                var formdata = new FormData()
+                formdata.append('image',{
+                uri: photo.uri,
+                name: 'picture.jpg', 
+                type: 'image/jpg' 
+                })
+                const config = {
+                method: 'POST',
+                body: formdata
+                };
+
+                const url = 'https://service-face.herokuapp.com/';
+                fetch(url,config)
+                .then((response) => response.text())
+                .then((responseEND)=>{
+                let name = responseEND.substring()
+                alert(name)
+                })
+                
+                }catch (error){
+                console.log('Failed to fetch products: ', error);
+            }
+
+        }
+
+    };
+    // onPictureSaved = photo => {
+    //     console.log(photo);
+    // } 
+  return (
+    <View style={styles.container}>
+      <Camera style={styles.camera} type={type} ref={(ref)=>{this.camera= ref}} 
+
+        onFacesDetected= {faceDetector}
+        faceDetectorSettings={{
+          mode: FaceDetector.Constants.Mode.fast
+        }}>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity 
+            style={styles.button}
+            onPress={() => {
+              setType(
+                type === Camera.Constants.Type.back
+                  ? Camera.Constants.Type.front
+                  : Camera.Constants.Type.back
+              );
+            }}>
+            <Text style={styles.text}> Flip </Text>
+            
+          </TouchableOpacity>
+         
+        </View>
+        { setChangeCamera && 
+          // <TouchableOpacity style={styles.captureButton} onPress={this.takePicture} >
+          //   <Text>Button</Text>
+          // </TouchableOpacity>
+          <Button style={styles.captureButton} title='TAKE' onPress={takePicture}>
+
+          </Button>
+        }
+      </Camera>
+    </View>
+
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  camera: {
+    flex: 1,
+  },
+  buttonContainer: {
+    flex: 1,
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    margin: 20,
+  },
+  button: {
+    flex: 0.1,
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 18,
+    color: 'white',
+  },
+  captureButton:{
+    flex: 0.1,
+    alignSelf: 'flex-start',
+    alignItems: 'center',
+    backgroundColor:'black'
+  }
+});
+export default CameraPage;
+
+//-------------------------
+<View style={{flex: 1,justifyItems:'center',justifyContent:'center',alignItems:'center',backgroundColor:'white',borderColor:'aqua',borderWidth:6}}>
+
+
+
+
+//---------------------------Show lesson old
+import React, {Component} from 'react';
+import { View, Text , StyleSheet, Button, ScrollView,FlatList,Image,TouchableOpacity, TextInput} from 'react-native';
+//import DatePicker from 'react-native-datepicker';
+import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons'; 
+import { AntDesign } from '@expo/vector-icons'; 
+import { Feather } from '@expo/vector-icons';
+function ShowLessonList({navigation,route}){
+  const [txtLessonName,setLessonName]=React.useState("FirstCreateNameLesson"); 
+  const onChangeHandler_LessonName = event => {
+    setLessonName(event.nativeEvent.text); //currentTarget
+  }
+  const getDateToday=new Date();
+  let dateToday=getDateToday.getDate()+"/"+parseInt(getDateToday.getMonth()+1)+"/"+getDateToday.getFullYear() ;
+
+  async function TaoBuoiHoc(){
+    const item={txtLessonName,dateToday};
+    // console.log(txtLessonName);
+    // console.log(dateToday);
+    //console.log(NHOM);
+    if(txtLessonName == 'FirstCreateNameLesson'){
+      alert("Vui lòng nhập tên buổi học!");
+    }else{
+      var data = new FormData();
+      data.append('txtNhom',NHOM); 
+      data.append('txtType',txtLessonName); 
+      data.append('txtDate',dateToday); 
+
+      let result= await fetch("http://192.168.1.6/SystemAptech/DiemDanhSV/API_DiemDanh/API_CreateLesson.php",{
+          method: 'POST',
+          headers: {},
+          body: data 
+      });
+      result= await result.json();
+      //console.log(result.recordset.Check);
+      if(result.recordset.Check == 1){
+        alert('Successfully: Tạo buổi học thành công!');
+        navigation.navigate('Lesson List Page',{NHOM_ID: NHOM}) 
+      }else{
+        alert('Error: Tạo buổi học thất bại!');
+        navigation.navigate('Lesson List Page',{NHOM_ID: NHOM}) 
+      }
+    }
+  }
+  class  DataTableAttend extends Component{
+    //lay du lieu
+    constructor(props){
+      super(props);
+      this.state={
+        data:[],
+      }
+    }
+    componentDidMount(){
+      var dataInput = new FormData();
+      window.NHOM=route.params.NHOM_ID;
+      dataInput.append('txtNhom',NHOM);
+      fetch("http://192.168.1.6/SystemAptech/DiemDanhSV/API_DiemDanh/API_ShowLesson.php",{
+        method: 'POST',
+        headers: { 
+          //'Content-Type': 'application/json'
+        },
+        body: dataInput
+      })
+      .then((response) => response.json())
+      .then((json) => {this.setState({data:json.recordset})})
+      .catch((error)=> console.log(error));
+    }
+    
+    //hien thi
+    render() {
+      const {data}= this.state;
+      const {date}= this.state;
+      
+      //const tempData= this.state;
+      //console.log(data[0].LH_UserName);
+      return(
+          <View style={{backgroundColor:'white',padding:2,alignItems:'center',textAlign:'center'}}>
+            
+            
+            <ScrollView horizontal={true}>
+            {/* <ScrollView> */}
+                {/* <View style={{flex:1,width:'100%',flexDirection:'row',borderColor:'black',borderWidth:2,marginBottom:-20}}> 
+                    <Text style={styles.Title_Table_Attend}>Attend</Text>
+                    <Text style={styles.Title_Table}>Lesson</Text> 
+                    <Text style={styles.Title_Table}>Date</Text> 
+                    <Text style={styles.Title_Table_small}>Total</Text>
+                    <Text style={styles.Title_Table_small}>Status</Text>
+                    
+                </View> */}
+                
+                <FlatList  style={{ flex:1,paddingBottom: 685,paddingTop:20,width:'100%'}}
+                data={data}
+                renderItem={({item}) =>(      
+                  <View style={{flex:1,fontSize:'40px',flexDirection:'row',borderColor:'black',borderWidth:2}}>
+                    {/* <Text style={styles.Colum_Table_Attend}>
+                        <TouchableOpacity style={{alignItems:'center',textAlign:'center'}}>
+                          <FontAwesome name="calendar-check-o" size={40} color="green"/>
+                        </TouchableOpacity>
+                        
+                    </Text> */}
+                    <View style={{flex:1,alignItems:'center'}}>
+                      <Image source={require('./picture/iconClass1.jpg')} style={{width:100,height:100}}></Image>
+                    </View>
+                    <View style={{flex:1,alignItems:'center'}}>
+                      <Text style={styles.Colum_Table}>
+                          {item.TYPE_LESSON}
+                      </Text>
+                      <Text style={styles.Colum_Table}>
+                          {item.DATE}
+                      </Text>
+                      {/* <Text style={styles.Colum_Table_Small}>
+                          {item.TOTAL} / {item.SiSo} 
+                      </Text> */}
+                      <Text style={styles.Colum_Table_Small}> 
+                          {item.TRANG_THAI == 0 ? <FontAwesome name="exclamation-circle" size={40} color="orange" />: <Feather name="check-circle" size={35} color="green" />}                     
+                      </Text>
+                    </View>
+                  </View>
+                )}
+                keyExtractor = {item => item.BH_ID} 
+                />
+                {/* </ScrollView>  */}
+                </ScrollView> 
+          </View>
+         
+      )
+    }
+  }
+  return(
+    <View style={{backgroundColor:'#fff',alignItems:'center',textAlign:'center'}}>
+      <Image source={require("./picture/Aptech.png")} style={{width:'95%',height:90}}></Image> 
+      <Text style={{fontSize:27, color:'black',fontWeight:'bold',textAlign:'center'}}>TẠO BUỔI HỌC</Text>
+      {/* <Text style={{fontSize:25}}>Buổi</Text> */}
+      <TextInput  onChange={(onChangeHandler_LessonName)} placeholder="Tên buổi học"  
+              style={{textAlign:'center',fontSize:26,height:60,width: 350,borderWidth:5,borderColor:'black',borderBottomLeftRadius: 30,
+              borderBottomRightRadius: 30,borderTopRightRadius:30,borderTopLeftRadius:30,color:'black'}}
+      />
+      
+      <Text></Text>
+      <TouchableOpacity onPress={(TaoBuoiHoc)} >
+      <Text style={{textAlign:'center',borderColor:'#00FA9A',borderWidth:3,width:180,fontSize:25,fontWeight:'bold',backgroundColor:'gray'}}>
+        Tạo
+      </Text>
+      </TouchableOpacity>
+      <Text style={{paddingBottom:5}}></Text>
+
+      {/* <Button title="Attendance" onPress={ ()=> navigation.navigate('Lesson',{id_Lop:ID_LOP}) } /> */}
+      <DataTableAttend/> 
+    </View>
+  )
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  Title_Table:{
+    flex:1,
+    width:150,
+    borderColor:'#00FA9A',
+    borderWidth:1,
+    textAlign:'center',
+    fontWeight:'bold',
+    color:'#00FA9A',
+    backgroundColor:'black',
+    fontSize:25,
+    
+  },
+  Colum_Table:{
+    flex:1,
+    width:150,
+    borderColor:'black',
+    borderWidth:1,
+    textAlign:'center',
+    fontSize:23,
+    
+  },
+  
+  Title_Table_small:{
+    flex:1,
+    width:80,
+    borderColor:'#00FA9A',
+    borderWidth:1,
+    textAlign:'center',
+    fontWeight:'bold',
+    color:'#00FA9A',
+    backgroundColor:'black',
+    fontSize:25
+  },
+  Colum_Table_Small:{
+    flex:1,
+    width:80,
+    borderColor:'black',
+    borderWidth:1,
+    textAlign:'center',
+    fontSize:23
+  },
+  Colum_Table_Attend:{
+    flex:1,
+    width:85,
+    
+    borderColor:'black',
+    borderWidth:1,
+    textAlign:'center',
+    alignItems:'center'
+  },
+  Title_Table_Attend:{
+    flex:1,
+    width:85,
+    borderColor:'#00FA9A',
+    borderWidth:1,
+    textAlign:'center',
+    fontWeight:'bold',
+    color:'#00FA9A',
+    backgroundColor:'black',
+    fontSize:25
+  },
+});
+
+export default ShowLessonList;
